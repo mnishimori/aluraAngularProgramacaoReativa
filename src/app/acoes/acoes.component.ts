@@ -1,8 +1,7 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import { FormControl } from '@angular/forms';
-import {Acoes} from './modelo/acoes';
+import {Component} from '@angular/core';
+import {FormControl} from '@angular/forms';
 import {AcoesService} from './acoes.service';
-import {Observable, Subscription} from "rxjs";
+import {startWith, switchMap} from 'rxjs/operators';
 
 @Component({
   selector: 'app-acoes',
@@ -11,7 +10,13 @@ import {Observable, Subscription} from "rxjs";
 })
 export class AcoesComponent {
   acoesInput = new FormControl();
-  acoes$: Observable<Acoes> = this.acoesService.getAcoes();
+  acoes$ = this.acoesInput.valueChanges
+    .pipe(
+      startWith('')
+    )
+    .pipe(
+      switchMap( (valorDigitado) => this.acoesService.getAcoes(valorDigitado))
+    );
 
   constructor(private acoesService: AcoesService) {}
 
